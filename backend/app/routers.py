@@ -354,9 +354,11 @@ def training_modules(db: Session = Depends(get_db), _: User = Depends(get_curren
 @router.get("/admin/overview")
 def admin_overview(db: Session = Depends(get_db), _: User = Depends(require_admin)):
     active = [services.task_snapshot(db, t) for t in db.scalars(select(Task).where(Task.status.in_(["active", "blocked", "suspended", "pending"])).order_by(Task.id.desc()))]
+    completed = [services.task_snapshot(db, t) for t in db.scalars(
+        select(Task).where(Task.status == "completed", Task.actual_end.is_not(None)).order_by(Task.actual_end.desc()).limit(8))]
     alerts = [services._alert_dict(a) for a in db.scalars(select(Alert).order_by(Alert.id.desc()).limit(50))]
     incidents = [services._incident_dict(i) for i in db.scalars(select(Incident).order_by(Incident.id.desc()).limit(50))]
     vehicles = [_vehicle(v) for v in db.scalars(select(Vehicle))]
     users = [_user(u) for u in db.scalars(select(User))]
     devices = {vid: dict(seatbelt_status=s["seatbelt_status"], proximity_m=s["proximity_m"]) for vid, s in services.DEVICE_STATE.items()}
-    return dict(tasks=active, alerts=alerts, incidents=incidents, vehicles=vehicles, users=users, devices=devices)
+    return dict(tasks=active, completed_tasks=completed, alerts=alerts, incidents=incidents, vehicles=vehicles, users=users, devices=devices)

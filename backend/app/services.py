@@ -195,7 +195,8 @@ def run_anomaly_check(db: Session, task: Task) -> dict:
 
 def task_snapshot(db: Session, task: Task) -> dict:
     now = datetime.utcnow()
-    elapsed = (now - task.actual_start).total_seconds() / 60 if task.actual_start else 0
+    end = task.actual_end or now
+    elapsed = (end - task.actual_start).total_seconds() / 60 if task.actual_start else 0
     predicted = task.predicted_time_min or 60
     lo, hi = (task.predicted_range_min or f"{predicted}-{predicted}").split("-")
     pct = min(99, elapsed / predicted * 100) if task.status == "active" else (100 if task.status == "completed" else 0)
@@ -222,8 +223,10 @@ def task_snapshot(db: Session, task: Task) -> dict:
 def complete_task(db: Session, task: Task) -> Task:
     task.status = "completed"
     task.actual_end = datetime.utcnow()
-    total_idle = sum(r.idling_min for r in db.scalars(select(SensorLog).where(SensorLog.task_id == task.id)))
-    task.total_idle_min = round(total_idle, 2)
+    # each telemetry row reports idle minutes for one sampling interval; scale to real interval and cap at task duration
+    idle_sum = sum(r.idling_min for r in db.scalars(select(SensorLog).where(SensorLog.task_id == task.id)))
+    elapsed_min = (task.actual_end - task.actual_start).total_seconds() / 60 if task.actual_start else 0
+    task.total_idle_min = round(min(idle_sum * config.SENSOR_INTERVAL_S / 60, elapsed_min), 2)
     task.paused = False
     db.flush()
     hub.emit_sync("task_update", task_snapshot(db, task), channels_for(task))

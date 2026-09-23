@@ -17,7 +17,13 @@ export default function Admin() {
   useEffect(() => { refresh(); const t = setInterval(refresh, 15000); return () => clearInterval(t) }, [refresh])
   useEffect(() => openSocket((ev) => {
     if (ev.event === 'alert' && ev.data.target === 'admin' && !ev.data.resolved) setFlash(ev.data)
-    if (ev.event === 'task_update') setOv(o => o && ({ ...o, tasks: o.tasks.some(t => t.id === ev.data.id) ? o.tasks.map(t => t.id === ev.data.id ? ev.data : t) : [ev.data, ...o.tasks] }))
+    if (ev.event === 'task_update') setOv(o => {
+      if (!o) return o
+      const done = ev.data.status === 'completed'
+      const tasks = o.tasks.filter(t => t.id !== ev.data.id)
+      const completed = (o.completed_tasks || []).filter(t => t.id !== ev.data.id)
+      return { ...o, tasks: done ? tasks : [ev.data, ...tasks], completed_tasks: done ? [ev.data, ...completed].slice(0, 8) : completed }
+    })
     else refresh()
   }), [refresh])
   useEffect(() => { if (flash) { const t = setTimeout(() => setFlash(null), 10000); return () => clearTimeout(t) } }, [flash])
@@ -61,6 +67,23 @@ export default function Admin() {
             {ov.tasks.length === 0 ? <div className="text-sm text-graphite-400">No tasks in progress.</div> : (
               <div className="space-y-3">
                 {ov.tasks.map(t => <TaskRow key={t.id} t={t} nameOf={nameOf} />)}
+              </div>
+            )}
+          </Card>
+
+          <Card title="Recently completed">
+            {!ov.completed_tasks?.length ? <div className="text-sm text-graphite-400">No completed tasks yet.</div> : (
+              <div className="space-y-2">
+                {ov.completed_tasks.map(t => (
+                  <div key={t.id} className="flex flex-wrap items-center gap-3 text-sm border border-graphite-700 rounded p-2 bg-graphite-900">
+                    <span className="font-display font-bold">#{t.id} {t.task_type}</span>
+                    <span className="text-graphite-400">{t.zone} · veh #{t.vehicle_id} · {nameOf(t.operator_id)}</span>
+                    <StatusBadge status={t.status} />
+                    <span className="ml-auto text-xs text-graphite-400">
+                      actual {fmtMin(t.elapsed_min)} / predicted {fmtMin(t.predicted_time_min)} · idle {fmtMin(t.total_idle_min)} · ended {fmtTime(t.actual_end)}
+                    </span>
+                  </div>
+                ))}
               </div>
             )}
           </Card>
