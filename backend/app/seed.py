@@ -22,9 +22,9 @@ USERS = [
 ]
 VEHICLES = [(1, "Excavator", 2), (2, "Dozer", 3), (3, "Wheel Loader", 4), (4, "Articulated Truck", 5)]
 TRAINING = [
-    ("Seatbelt: Buckle Up Before You Start", "seatbelt", "https://www.youtube.com/embed/gQr5uEhVAu8"),
-    ("Proximity Awareness Around Heavy Equipment", "proximity", "https://www.youtube.com/embed/bo0F15Mwhso"),
-    ("Reducing Idle Time", "idling", "https://www.youtube.com/embed/Fh4cYsISVIQ"),
+    ("Seatbelt: Buckle Up Before You Start", "seatbelt", "https://www.youtube.com/embed/X3KszN-1e8U"),
+    ("Proximity Awareness Around Heavy Equipment", "proximity", "https://www.youtube.com/embed/Oxfjvpwn944"),
+    ("Reducing Idle Time", "idling", "https://www.youtube.com/embed/H6kRU_2z73Y"),
 ]
 
 
