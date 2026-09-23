@@ -1,0 +1,39 @@
+services:
+  backend:
+    build: ./backend
+    environment:
+      JWT_SECRET: ${JWT_SECRET:-change-me-in-production-please-32b}
+      OPENWEATHER_API_KEY: ${OPENWEATHER_API_KEY:-}
+      SITE_LAT: ${SITE_LAT:-41.88}
+      SITE_LON: ${SITE_LON:--87.63}
+      DATABASE_URL: sqlite:////data/cat.db
+      SENSOR_INTERVAL_S: ${SENSOR_INTERVAL_S:-10}
+      ANOMALY_INTERVAL_S: ${ANOMALY_INTERVAL_S:-30}
+    volumes:
+      - dbdata:/data
+    ports:
+      - "8000:8000"
+
+  # Operator terminal — one build per vehicle (VITE_VEHICLE_ID is the per-device config)
+  operator:
+    build:
+      context: ./frontend
+      args:
+        VITE_VEHICLE_ID: ${OPERATOR_VEHICLE_ID:-1}
+        VITE_APP_MODE: operator
+    depends_on: [backend]
+    ports:
+      - "5173:80"
+
+  # Admin / supervisor dashboard — separate build & device
+  admin:
+    build:
+      context: ./frontend
+      args:
+        VITE_APP_MODE: admin
+    depends_on: [backend]
+    ports:
+      - "5174:80"
+
+volumes:
+  dbdata:

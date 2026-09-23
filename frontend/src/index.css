@@ -1,0 +1,29 @@
+@import "tailwindcss";
+
+@theme {
+  --color-cat: #FFCD11;
+  --color-cat-dark: #d9ad00;
+  --color-graphite-950: #0d0f12;
+  --color-graphite-900: #14171c;
+  --color-graphite-800: #1c2027;
+  --color-graphite-700: #272c35;
+  --color-graphite-600: #343b47;
+  --color-graphite-400: #7c8695;
+  --font-display: "Barlow Condensed", "Arial Narrow", sans-serif;
+  --font-sans: "Inter", system-ui, sans-serif;
+}
+
+html, body, #root { height: 100%; }
+body { @apply bg-graphite-950 text-slate-100 font-sans antialiased; }
+
+.card { @apply bg-graphite-800 border border-graphite-700 rounded-lg p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.03)]; }
+.card-title { @apply text-[11px] font-semibold uppercase tracking-[0.18em] text-graphite-400 mb-2; }
+.btn-cat, .btn-ghost, .btn-danger { @apply inline-flex items-center justify-center gap-2 px-4 py-2 rounded font-semibold uppercase tracking-wide text-sm transition disabled:opacity-40 disabled:cursor-not-allowed; }
+.btn-cat { @apply bg-cat text-graphite-950 hover:bg-cat-dark; }
+.btn-ghost { @apply bg-graphite-700 text-slate-100 hover:bg-graphite-600; }
+.btn-danger { @apply bg-red-600 text-white hover:bg-red-500; }
+.input { @apply w-full bg-graphite-900 border border-graphite-600 rounded px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-cat; }
+.label { @apply block text-xs uppercase tracking-wider text-graphite-400 mb-1; }
+.stat { @apply text-3xl font-display font-bold leading-none; }
+.badge { @apply inline-block px-2 py-0.5 rounded text-[11px] font-bold uppercase tracking-wider; }
+.hazard-stripe { background: repeating-linear-gradient(45deg, #FFCD11 0 12px, #0d0f12 12px 24px); }

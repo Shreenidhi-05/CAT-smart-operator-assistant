@@ -1,0 +1,9 @@
+node_modules/
+dist/
+.venv/
+__pycache__/
+*.pyc
+backend/data/*.db
+backend/data/*.csv
+backend/models/*.pkl
+.env

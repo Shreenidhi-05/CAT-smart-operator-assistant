@@ -1,0 +1,49 @@
+[
+  {
+    "key": "seatbelt_block",
+    "title": "Seatbelt block → training video → sensor fault",
+    "operator": "leo",
+    "vehicle_id": 3,
+    "zone": "Zone A - Pit",
+    "task_type": "Loading",
+    "device_state": {"seatbelt_status": "unfastened", "proximity_m": 20},
+    "steps": [
+      "Login as leo / operator123 on vehicle #3 (VITE_VEHICLE_ID=3).",
+      "Set cockpit seatbelt to UNFASTENED, press Start Task → gate blocks and plays the seatbelt training video.",
+      "Leave it >60s → status flips to SENSOR FAULT and the supervisor is notified (admin dashboard alert + incident)."
+    ]
+  },
+  {
+    "key": "risk_suspension",
+    "title": "Risk check suggests suspension",
+    "operator": "maya",
+    "vehicle_id": 1,
+    "zone": "Zone C - Ridge",
+    "task_type": "Excavation",
+    "ground_condition": "muddy",
+    "ground_moisture": 0.82,
+    "obstacle_distance_m": 8,
+    "device_state": {"seatbelt_status": "fastened", "proximity_m": 20},
+    "steps": [
+      "Login as maya on vehicle #1, choose Zone C - Ridge (fallback weather: 58 km/h wind, 40 m visibility).",
+      "Prepare task → LightGBM estimate shown, risk check returns wind/visibility/moisture breaches → Suspend suggested."
+    ]
+  },
+  {
+    "key": "escalation",
+    "title": "3 unresolved anomaly alerts → admin escalation + incident",
+    "operator": "raj",
+    "vehicle_id": 2,
+    "zone": "Zone B - Haul Road",
+    "task_type": "Hauling",
+    "ground_condition": "dry",
+    "ground_moisture": 0.2,
+    "obstacle_distance_m": 12,
+    "device_state": {"seatbelt_status": "fastened", "proximity_m": 20},
+    "steps": [
+      "Login as raj on vehicle #2, start a Hauling task with demo scenario 'escalation'.",
+      "Simulated telemetry drifts into high idling / high fuel / low cycles → z-score + Isolation Forest flag anomalies every check.",
+      "Do not resolve them: after the 3rd unresolved alert the admin dashboard receives an escalation and an incident is auto-created."
+    ]
+  }
+]
